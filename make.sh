@@ -10,7 +10,7 @@ gitlab_project_var="\${CI_REGISTRY_IMAGE}"
 . "${docker_builder_data_dir}/data.sh"
 
 github_action_dir=".github/workflows"
-
+ghcr_schedule="${ghcr_schedule:-00 02 * * 5}"
 badgesfilenames="${project_path}/badges.md"
 gitlabci_filename="${project_path}/.gitlab-ci.yml"
 ghcr_action_filename="${project_path}/${github_action_dir}/build.yml"
@@ -136,7 +136,7 @@ init_makefile() {
 
 init_ghcr_action() {
     mkdir -p $(dirname "${ghcr_action_filename}")
-    cat "${ghcr_action_base_filename}" > "${ghcr_action_filename}"
+    sed -e 's/cron: ".*"/cron: "'"${ghcr_schedule}"'"/' "${ghcr_action_base_filename}" > "${ghcr_action_filename}"
 }
 
 add_badge() {
