@@ -181,6 +181,7 @@ add_ghcr_action() {
     echo "            uses: docker/build-push-action@v4.0.0" >> "${ghcr_action_filename}"
     echo "            with:" >> "${ghcr_action_filename}"
     echo "                context: ${dockerfiles_relative_dir}/ghcr/${id}/" >> "${ghcr_action_filename}"
+    echo "                push: true" >> "${ghcr_action_filename}"
     echo "                build-args: |" >> "${ghcr_action_filename}"
     echo "                    VCS_REF=\${{ env.VCS_REF }}" >> "${ghcr_action_filename}"
     echo "                    BUILD_DATE=\${{ env.BUILD_DATE }}" >> "${ghcr_action_filename}"
