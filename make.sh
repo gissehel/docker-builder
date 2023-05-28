@@ -178,7 +178,7 @@ add_ghcr_action() {
     id="$1"
 
     echo "          - name: 'Build image ${id} \${{ env.GITHUB_SHA_SHORT }}'" >> "${ghcr_action_filename}"
-    echo "            uses: docker/build-push-action@v2" >> "${ghcr_action_filename}"
+    echo "            uses: docker/build-push-action@v4.0.0" >> "${ghcr_action_filename}"
     echo "            with:" >> "${ghcr_action_filename}"
     echo "                context: ${dockerfiles_relative_dir}/ghcr/${id}/" >> "${ghcr_action_filename}"
     echo "                build-args: |" >> "${ghcr_action_filename}"
