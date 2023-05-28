@@ -185,8 +185,7 @@ add_ghcr_action() {
     echo "                    VCS_REF=\${{ env.VCS_REF }}" >> "${ghcr_action_filename}"
     echo "                    BUILD_DATE=\${{ env.BUILD_DATE }}" >> "${ghcr_action_filename}"
     echo "                file: ${dockerfiles_relative_dir}/ghcr/${id}/Dockerfile" >> "${ghcr_action_filename}"
-    echo "                push: \${{ github.event_name != 'pull_request' }}" >> "${ghcr_action_filename}"
-    echo "                tags: ghcr.io/\${{ secrets.CR_USER }}/${id}:latest,ghcr.io/\${{ secrets.CR_USER }}/${id}:${VERSION},ghcr.io/\${{ secrets.CR_USER }}/${id}:${VERSION}-\${{ env.GITHUB_SHA_SHORT }},ghcr.io/\${{ secrets.CR_USER }}/${id}:\${{ env.GITHUB_SHA_SHORT }},\${{ secrets.CR_USER }}/${id}:latest,\${{ secrets.CR_USER }}/${id}:${VERSION},\${{ secrets.CR_USER }}/${id}:${VERSION}-\${{ env.GITHUB_SHA_SHORT }},\${{ secrets.CR_USER }}/${id}:\${{ env.GITHUB_SHA_SHORT }}" >> "${ghcr_action_filename}"
+    echo "                tags: \${{ env.GH_PREFIX }}/${id}:latest,\${{ env.GH_PREFIX }}/${id}:${VERSION},\${{ env.GH_PREFIX }}/${id}:${VERSION}-\${{ env.GITHUB_SHA_SHORT }},\${{ env.GH_PREFIX }}/${id}:\${{ env.GITHUB_SHA_SHORT }},\${{ env.DOCKER_HUB_PREFIX }}/${id}:latest,\${{ env.DOCKER_HUB_PREFIX }}/${id}:${VERSION},\${{ env.DOCKER_HUB_PREFIX }}/${id}:${VERSION}-\${{ env.GITHUB_SHA_SHORT }},\${{ env.DOCKER_HUB_PREFIX }}/${id}:\${{ env.GITHUB_SHA_SHORT }}" >> "${ghcr_action_filename}"
 }
 
 create_dockerfile_from_id() {

@@ -7,27 +7,49 @@ on:
     push:
         branches:
             - master
-    pull_request:
 jobs:
     build:
         name: 'Build'
         runs-on: ubuntu-latest
         steps:
           - name: "Build:checkout"
-            uses: actions/checkout@v2
+            uses: actions/checkout@v3
           - name: "Set environment variables"
             run: |
-                echo "GITHUB_SHA_SHORT=$(echo ${GITHUB_SHA} | cut -c1-8)" >> "${GITHUB_ENV}"
-                echo "VCS_REF=$(echo ${GITHUB_SHA} | cut -c1-8)" >> "${GITHUB_ENV}"
-                echo "BUILD_DATE=$(TZ=Europe/Paris date -Iseconds)" >> "${GITHUB_ENV}"
+                export_ga() {
+                    for _name in "${@}"
+                    do
+                        local _key="${_name%%=*}"
+                        local _value="${_name#*=}"
+                        [ "${_key}" == "${_name}" ] && _value="${!_name}"
+                        export $_key="${_value}"
+                        echo "${_key}=${_value}" >> "${GITHUB_ENV}"
+                    done
+                }
+
+                export_ga GITHUB_SHA_SHORT="$(git rev-parse --short HEAD)"
+                export_ga VCS_REF="$(echo ${GITHUB_SHA} | cut -c1-8)"
+                export_ga BUILD_DATE="$(TZ=Europe/Paris date -Iseconds)"
+
+                export_ga GH_REGISTRY="ghcr.io"
+                export_ga GH_USER="${{ github.actor }}"
+                export_da GH_PREFIX="${GH_REGISTRY}/${GH_USER}"
+                export_ga DOCKER_HUB_REGISTRY="docker.io"
+                export_ga DOCKER_HUB_USER="${{ vars.DOCKER_HUB_USER }}"
+                export_ga DOCKER_HUB_PREFIX="${DOCKER_HUB_REGISTRY}/${DOCKER_HUB_USER}"
+          - name: "Install cosign"
+            uses: "sigstore/cosign-installer@v3.0.5"
+            with:
+                cosign-release: "v2.0.2"
           - name: 'Login to github container registry'
-            uses: docker/login-action@v1
+            uses: docker/login-action@v2.1.0
             with:
-                registry: ghcr.io
-                username: ${{ secrets.CR_USER }}
-                password: ${{ secrets.CR_PAT }}
+                registry: "${{ env.GH_REGISTRY }}"
+                username: "${{ env.GH_USER }}"
+                password: "${{ secrets.GITHUB_TOKEN }}"
           - name: 'Login to docker hub'
-            uses: docker/login-action@v1
+            uses: docker/login-action@v2.1.0
             with:
-                username: ${{ secrets.DH_USER }}
-                password: ${{ secrets.DH_PAT }}
+                registry: "${{ env.DOCKER_HUB_REGISTRY }}"
+                username: "${{ env.DOCKER_HUB_USER }}"
+                password: "${{ secrets.DOCKER_HUB_TOKEN }}"
